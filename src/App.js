@@ -1,24 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import Router from "./routes";
+import ThemeProvider from "./theme";
+import "./App.css";
+import { Box, Typography } from "@mui/material";
+import Copyright from "./components/Copyright";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider>
+      <Box
+        className="hero-image"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Typography variant="h1" color="white" className="title">
+          CODERCAR DATABASE
+        </Typography>
+      </Box>
+      <Router />
+      <Copyright />
+    </ThemeProvider>
   );
 }
 
