@@ -46,16 +46,19 @@ export default function FormModal({
       "string.empty": "Make is required.",
     }),
     model: Joi.string().required().messages({
-      "string.empty": "Model is required",
+      "string.empty": "Model is required.",
     }),
-    release_date: Joi.number()
-      .integer()
-      .min(1900)
-      .max(new Date().getFullYear())
-      .required()
-      .messages({
-        "number.min": "Please select a year >= 1900.",
-      }),
+    // release_date: Joi.number()
+    //   .integer()
+    //   .min(1900)
+    //   .max(new Date().getFullYear())
+    //   .required()
+    //   .messages({
+    //     "number.min": "Please select a year >= 1900.",
+    //   }),
+    release_date: Joi.date().greater("1990-1-1").messages({
+      "date.greater": "Year must be greater than 1990.",
+    }),
     transmission_type: Joi.string()
       .valid(
         "MANUAL",
@@ -98,7 +101,7 @@ export default function FormModal({
   const handleCreate = async (newFormData) => {
     try {
       await apiService.post("/cars", { ...newFormData });
-      // setForm(initial_form);
+      setForm(initial_form);
       refreshData();
     } catch (err) {
       console.log(err.message);
@@ -278,10 +281,10 @@ export default function FormModal({
                 value={
                   !selectedCar
                     ? moment(form.release_date)
-                    : moment(`${form.release_date}-04-08`).toDate()
+                    : moment(form.release_date).toDate()
                 }
                 onChange={(newValue) => {
-                  setForm({ ...form, release_date: moment(newValue).year() });
+                  setForm({ ...form, release_date: moment(newValue).format() });
                 }}
                 slotProps={{
                   textField: {
