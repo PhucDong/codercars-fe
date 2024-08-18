@@ -1,7 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import apiService from "../app/apiService";
 import { DataGrid } from "@mui/x-data-grid";
-import { Container, Fab, IconButton, Pagination, Stack } from "@mui/material";
+import {
+  Box,
+  Container,
+  Fab,
+  IconButton,
+  Pagination,
+  Stack,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
@@ -9,6 +16,7 @@ import FormModal from "../components/FormModal";
 import AddIcon from "@mui/icons-material/Add";
 import { useLocation } from "react-router-dom";
 import { CustomNoRowsOverlay } from "../utils/tableNoData";
+import moment from "moment";
 
 const HomePage = () => {
   const [cars, setCars] = useState([]);
@@ -46,12 +54,9 @@ const HomePage = () => {
     }
   };
 
-  const name =
-    selectedCar?.release_date +
-    " " +
-    selectedCar?.make +
-    " " +
-    selectedCar?.model;
+  const name = `${moment(selectedCar?.release_date).year()} ${
+    selectedCar?.make
+  } ${selectedCar?.model}`;
 
   const columns = [
     {
@@ -101,6 +106,9 @@ const HomePage = () => {
       minWidth: 80,
       headerAlign: "center",
       align: "center",
+      renderCell: ({ value }) => {
+        return <Box>{moment(value).year()}</Box>;
+      },
     },
     {
       field: "id",
@@ -147,8 +155,8 @@ const HomePage = () => {
     });
 
     const res = await apiService.get(url);
-    setCars(res[0].cars);
-    setTotalPages(res[0].metadata[0].totalPages);
+    setCars(res.cars);
+    setTotalPages(res.total);
   }, [location.search, page]);
 
   useEffect(() => {
@@ -156,7 +164,7 @@ const HomePage = () => {
   }, [getData]);
 
   return (
-    <Container maxWidth="xl" sx={{ mt: "32px" }}>
+    <Container maxWidth="xl" sx={{ height: "100%", mt: "32px" }}>
       {/* Delete form */}
       <DeleteConfirmModal
         open={openConfirm}
@@ -181,7 +189,7 @@ const HomePage = () => {
         }}
         mode={mode}
       />
-      <div style={{ width: "100%", overflow: "auto" }}>
+      <div style={{ height: "100%", width: "100%", overflow: "auto" }}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -248,7 +256,7 @@ const HomePage = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              maxHeight: "100%",
+              minHeight: "100%",
             },
           }}
         />
