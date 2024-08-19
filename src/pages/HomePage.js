@@ -18,9 +18,18 @@ import { useLocation } from "react-router-dom";
 import { CustomNoRowsOverlay } from "../utils/tableNoData";
 import moment from "moment";
 
+function getEncodedQuery(str) {
+  return encodeURI(str)
+    .replace(/%5B/g, "[")
+    .replace(/%5D/g, "]")
+    .replace(
+      /[!'()*]/g,
+      (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`
+    );
+}
+
 const HomePage = () => {
   const [cars, setCars] = useState([]);
-  // const [rows, setRows] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
   const [openForm, setOpenForm] = useState(false);
@@ -145,13 +154,15 @@ const HomePage = () => {
 
     const keyList = {};
     for (const [key, value] of queryParams.entries()) {
-      keyList[`${key}`] = value;
+      keyList[`${key}`] = getEncodedQuery(value);
     }
 
-    let url = `/cars?limit=10&page=${page}`;
+    let url = `/cars?page=${page}`;
 
     Object.keys(keyList).forEach((key) => {
-      if (keyList[key]) url += `&${key}=${keyList[key]}`;
+      if (keyList[key]) {
+        url += `&${key}=${keyList[key]}`;
+      }
     });
 
     const res = await apiService.get(url);
@@ -200,15 +211,6 @@ const HomePage = () => {
           getRowHeight={() => "auto"}
           autoHeight
           disableRowSelectionOnClick
-          initialState={{
-            pagination: {
-              paginationModel: {
-                page: 0,
-                pageSize: 12,
-              },
-            },
-          }}
-          pageSizeOptions={[12]}
           slots={{
             noRowsOverlay: CustomNoRowsOverlay,
             pagination: () => (
